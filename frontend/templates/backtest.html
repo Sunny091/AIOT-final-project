@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回測結果 - MCP Trading System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 量化交易回測結果</h1>
+            <p class="subtitle">分析策略表現與績效指標</p>
+            <nav>
+                <a href="/">聊天介面</a>
+                <a href="/backtest" class="active">回測結果</a>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <!-- Run New Backtest -->
+            <div class="backtest-form">
+                <h3>⚡ 運行新回測</h3>
+                <form id="backtestForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>交易對</label>
+                            <select id="symbol">
+                                <option value="BTC/USDT">BTC/USDT</option>
+                                <option value="ETH/USDT">ETH/USDT</option>
+                                <option value="BNB/USDT">BNB/USDT</option>
+                                <option value="SOL/USDT">SOL/USDT</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>時間週期</label>
+                            <select id="timeframe">
+                                <option value="1h">1 小時</option>
+                                <option value="4h">4 小時</option>
+                                <option value="1d">1 天</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>策略</label>
+                            <select id="strategy">
+                                <option value="sentiment">情感分析策略</option>
+                                <option value="technical">技術分析策略</option>
+                                <option value="combined">綜合策略</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>初始資金</label>
+                            <input type="number" id="initial_capital" value="10000" min="1000" step="1000">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>開始日期</label>
+                            <input type="date" id="start_date">
+                        </div>
+                        <div class="form-group">
+                            <label>結束日期</label>
+                            <input type="date" id="end_date">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">🚀 開始回測</button>
+                </form>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <p>正在運行回測，請稍候...</p>
+            </div>
+
+            <!-- Backtest Results -->
+            <div class="backtest-results" id="backtestResults">
+                <h3>📈 最近的回測結果</h3>
+                <div id="resultsContainer">
+                    <p class="text-center">暫無回測結果，請運行一個回測。</p>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-container" id="chartsContainer" style="display: none;">
+                <div class="chart-box">
+                    <h4>回測表現概覽</h4>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>策略比較</h4>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/backtest.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密貨幣 AI 交易助手 - MCP System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 加密貨幣 AI 交易助手</h1>
+            <p class="subtitle">基於 MCP 架構的智能加密貨幣分析系統</p>
+            <nav>
+                <a href="/" class="active">聊天介面</a>
+                <a href="/backtest">回測結果</a>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>快速操作</h3>
+                <div class="action-buttons">
+                    <button onclick="quickAction('查詢 BTC 價格')">📊 BTC 價格</button>
+                    <button onclick="quickAction('分析 ETH 的情感')">💭 ETH 情感分析</button>
+                    <button onclick="quickAction('進行 BTC/USDT 技術分析')">📈 技術分析</button>
+                    <button onclick="quickAction('顯示 BTC 過去一週的價格走勢圖')">📊 價格走勢圖</button>
+                    <button onclick="quickAction('對 BTC/USDT 進行綜合分析')">🎯 綜合分析</button>
+                    <button onclick="quickAction('回測 MACD 策略')">⚡ 運行回測</button>
+                </div>
+            </div>
+    
+            <!-- Chart Container (hidden by default) -->
+            <div class="chart-container" id="chartContainer" style="display: none;">
+                <h3>圖表顯示</h3>
+                <div id="chartDisplay"></div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            <strong>🤖 AI 助手：</strong>
+                            <p>您好！我是基於 GPT-OSS 20B 和 MCP 架構的加密貨幣交易助手。</p>
+                            <p>我可以幫您：</p>
+                            <ul>
+                                <li>📊 查詢加密貨幣即時價格和市場數據</li>
+                                <li>📰 獲取並分析最新加密貨幣新聞（使用 FinBERT 情感分析）</li>
+                                <li>📈 進行深度學習技術分析（LSTM + Transformer）</li>
+                                <li>⚙️ 創建和管理量化交易策略</li>
+                                <li>📊 運行策略回測並查看結果</li>
+                                <li>📊 生成時間序列圖表，顯示價格走勢和K線圖</li>
+                                <li>🎯 提供綜合投資建議</li>
+                            </ul>
+                            <p>請告訴我您想做什麼！</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <textarea 
+                        id="chatInput" 
+                        placeholder="輸入您的問題或指令，例如：「查詢 BTC 的價格」、「分析 ETH 的新聞情感」、「進行 BTC/USDT 技術分析」..."
+                        rows="3"
+                    ></textarea>
+                    <div class="input-controls">
+                        <button onclick="resetChat()" class="btn-secondary">🔄 重置對話</button>
+                        <button onclick="sendMessage()" class="btn-primary">📤 發送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar" id="statusBar">
+                <span id="statusText">就緒</span>
+                <span id="modelInfo">模型: GPT-OSS 20B</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
