@@ -36,7 +36,12 @@
     
             <!-- Chart Container (hidden by default) -->
             <div class="chart-container" id="chartContainer" style="display: none;">
-                <h3>圖表顯示</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">圖表顯示</h3>
+                    <button onclick="clearChart()" class="btn-secondary" style="padding: 5px 15px; font-size: 14px;">
+                        🗑️ 清除圖表
+                    </button>
+                </div>
                 <div id="chartDisplay"></div>
             </div>
 

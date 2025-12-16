@@ -367,12 +367,40 @@ async function resetChat() {
                     </div>
                 </div>`;
             
+            // Clear chart when resetting chat
+            clearChart();
+            
             updateStatus('就緒', 'success');
         } catch (error) {
             console.error('Error:', error);
             alert('重置對話時發生錯誤');
         }
     }
+}
+
+// Clear chart display
+function clearChart() {
+    const chartContainer = document.getElementById('chartContainer');
+    const chartDisplay = document.getElementById('chartDisplay');
+    
+    // Hide chart container
+    chartContainer.style.display = 'none';
+    
+    // Clear chart content
+    chartDisplay.innerHTML = '';
+    
+    // Destroy any Chart.js instances
+    if (window.currentChart) {
+        window.currentChart.destroy();
+        window.currentChart = null;
+    }
+    
+    // Clear Plotly chart
+    if (chartDisplay.querySelector('.plotly')) {
+        Plotly.purge(chartDisplay);
+    }
+    
+    updateStatus('圖表已清除', 'success');
 }
 
 // Initialize
