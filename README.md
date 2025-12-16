@@ -134,12 +134,6 @@ mcp_system_final/
 | `run_backtest` | 量化回測 | 執行回測並返回結果 |
 | `create_chart` | 圖表生成 | 生成價格走勢圖、K線圖 |
 
-## 📖 文檔
-
-- **[QUICK_GUIDE.md](QUICK_GUIDE.md)** - 快速使用指南
-- **[FINAL_COMPLETION.md](FINAL_COMPLETION.md)** - 完整項目報告
-- **[OPTION2_COMPLETE.md](OPTION2_COMPLETE.md)** - Option 2 優化報告
-- **[COMBINED_STRATEGY_OPTIMIZED.md](COMBINED_STRATEGY_OPTIMIZED.md)** - 綜合策略優化
 
 ## 🧪 測試
 
