@@ -18,7 +18,7 @@ class ChartTool:
             "parameters": {
                 "data_source": "數據來源類型 (price/sentiment/custom)",
                 "symbol": "加密貨幣符號 (例如: BTC/USDT)",
-                "timeframe": "時間範圍 (1h/4h/1d/1w)",
+                "timeframe": "時間範圍 (1d/3d/1w)",
                 "start_date": "開始日期 (可選, 格式: YYYY-MM-DD)",
                 "end_date": "結束日期 (可選, 格式: YYYY-MM-DD)",
                 "chart_type": "圖表類型 (line/candlestick, 默認: line)",
@@ -30,7 +30,7 @@ class ChartTool:
         from backend.mcp_tools.crypto_tools import CryptoDataTool
         self.crypto_data = CryptoDataTool()
     
-    def create_price_chart(self, symbol: str, timeframe: str = '1h', 
+    def create_price_chart(self, symbol: str, timeframe: str = '1d', 
                           start_date: str = None, end_date: str = None,
                           chart_type: str = 'line') -> Dict[str, Any]:
         """創建價格走勢圖"""
@@ -243,14 +243,13 @@ class ChartTool:
                 '5m': 5,
                 '15m': 15,
                 '30m': 30,
-                '1h': 60,
-                '4h': 240,
                 '1d': 1440,
+                '3d': 4320,
                 '1w': 10080
             }
             
             minutes = days * 1440
-            tf_minutes = timeframe_minutes.get(timeframe, 60)
+            tf_minutes = timeframe_minutes.get(timeframe, 1440)
             return min(int(minutes / tf_minutes), 1000)
         
         # Default limits
@@ -258,9 +257,8 @@ class ChartTool:
             '1m': 500,
             '5m': 500,
             '15m': 500,
-            '1h': 168,  # 1 week
-            '4h': 180,  # 1 month
             '1d': 90,   # 3 months
+            '3d': 120,  # ~1 year
             '1w': 52    # 1 year
         }
         
@@ -272,7 +270,7 @@ class ChartTool:
         
         if data_source == 'price':
             symbol = params.get('symbol', 'BTC/USDT')
-            timeframe = params.get('timeframe', '1h')
+            timeframe = params.get('timeframe', '1d')
             start_date = params.get('start_date')
             end_date = params.get('end_date')
             chart_type = params.get('chart_type', 'line')

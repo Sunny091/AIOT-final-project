@@ -75,7 +75,7 @@ class SentimentTimeSeriesProcessor:
         Args:
             news_df: DataFrame with news data
             sentiment_analyzer: FinBERTSentimentAnalyzer instance
-            timeframe: Time granularity ('1h', '4h', '1d', etc.)
+            timeframe: Time granularity ('1d', '3d', '5d', '10d', etc.)
             symbol: Cryptocurrency symbol
             use_cache: Whether to use cached results
             

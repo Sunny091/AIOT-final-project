@@ -646,12 +646,10 @@ class BacktestEngine:
                 time_diff = df_temp['timestamp'].diff().median()
                 
                 # Map timedelta to timeframe string
-                if time_diff <= pd.Timedelta(hours=1):
-                    timeframe = '1h'
-                elif time_diff <= pd.Timedelta(hours=4):
-                    timeframe = '4h'
-                else:
+                if time_diff <= pd.Timedelta(days=1):
                     timeframe = '1d'
+                else:
+                    timeframe = '3d'
                 
                 print(f"Detected timeframe: {timeframe}")
                 
@@ -737,7 +735,7 @@ class BacktestTool:
             from backend.mcp_tools.crypto_tools import CryptoDataTool
             
             symbol = params.get('symbol', 'BTC/USDT')
-            timeframe = params.get('timeframe', '1h')
+            timeframe = params.get('timeframe', '1d')
             strategy = params.get('strategy', 'sentiment')
             initial_capital = params.get('initial_capital', 10000)
             start_date = params.get('start_date')

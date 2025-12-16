@@ -20,7 +20,7 @@ class CryptoDataTool:
             "description": "Get current price and market data for a cryptocurrency",
             "parameters": {
                 "symbol": "Trading pair symbol (e.g., BTC/USDT)",
-                "timeframe": "Optional timeframe for OHLCV data (1m, 5m, 15m, 1h, 4h, 1d)"
+                "timeframe": "Optional timeframe for OHLCV data (1m, 5m, 15m, 1d, 3d)"
             }
         }
     
@@ -43,19 +43,47 @@ class CryptoDataTool:
         except Exception as e:
             return {"success": False, "error": str(e)}
     
-    def get_ohlcv(self, symbol: str, timeframe: str = '1h', limit: int = 100) -> Dict[str, Any]:
+    def get_ohlcv(self, symbol: str, timeframe: str = '1d', limit: int = 100) -> Dict[str, Any]:
         """Get OHLCV (candlestick) data"""
         try:
-            ohlcv = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
-            df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
-            
-            return {
-                "success": True,
-                "symbol": symbol,
-                "timeframe": timeframe,
-                "data": df.to_dict('records')
-            }
+            # Handle custom timeframes not supported by CCXT
+            if timeframe in ['3d']:
+                # Use 1d data and resample
+                days = int(timeframe[:-1])  # Extract number from '3d'
+                actual_limit = limit * days  # Fetch more 1d candles
+                ohlcv = self.exchange.fetch_ohlcv(symbol, '1d', limit=actual_limit)
+                df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+                df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+                
+                # Resample to custom timeframe
+                df.set_index('timestamp', inplace=True)
+                resampled = df.resample(f'{days}D').agg({
+                    'open': 'first',
+                    'high': 'max',
+                    'low': 'min',
+                    'close': 'last',
+                    'volume': 'sum'
+                }).dropna()
+                resampled.reset_index(inplace=True)
+                
+                return {
+                    "success": True,
+                    "symbol": symbol,
+                    "timeframe": timeframe,
+                    "data": resampled.to_dict('records')
+                }
+            else:
+                # Use native CCXT timeframe
+                ohlcv = self.exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
+                df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+                df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+                
+                return {
+                    "success": True,
+                    "symbol": symbol,
+                    "timeframe": timeframe,
+                    "data": df.to_dict('records')
+                }
         except Exception as e:
             return {"success": False, "error": str(e)}
     
@@ -101,7 +129,7 @@ class CryptoDataTool:
         if action == 'price':
             return self.get_current_price(symbol)
         elif action == 'ohlcv':
-            timeframe = params.get('timeframe', '1h')
+            timeframe = params.get('timeframe', '1d')
             limit = params.get('limit', 100)
             return self.get_ohlcv(symbol, timeframe, limit)
         elif action == 'orderbook':

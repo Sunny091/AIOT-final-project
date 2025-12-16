@@ -321,7 +321,7 @@ class TechnicalAnalysisTool:
             "description": "Perform deep learning-based technical analysis on cryptocurrency price data",
             "parameters": {
                 "symbol": "Trading pair symbol",
-                "timeframe": "Timeframe for analysis (1h, 4h, 1d)",
+                "timeframe": "Timeframe for analysis (1d, 3d, 5d, 10d)",
                 "prediction_steps": "Number of steps to predict (default: 1)"
             }
         }
@@ -332,7 +332,7 @@ class TechnicalAnalysisTool:
             from backend.mcp_tools.crypto_tools import CryptoDataTool
             
             symbol = params.get('symbol', 'BTC/USDT')
-            timeframe = params.get('timeframe', '1h')
+            timeframe = params.get('timeframe', '1d')
             steps = params.get('prediction_steps', 1)
             
             # Fetch OHLCV data
