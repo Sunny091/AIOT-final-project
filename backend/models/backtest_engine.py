@@ -428,9 +428,20 @@ class BacktestEngine:
             
             # Merge sentiment data if available
             if sentiment_data is not None and not sentiment_data.empty:
-                df = df.merge(sentiment_data[['sentiment_score']], 
-                            left_on='timestamp', right_index=True, how='left')
-                df['sentiment_score'].fillna(0.0, inplace=True)
+                # Ensure sentiment_data timestamp is datetime type
+                sentiment_data = sentiment_data.copy()
+                sentiment_data['timestamp'] = pd.to_datetime(sentiment_data['timestamp'])
+
+                # Use merge_asof for time-series alignment (more robust)
+                df = df.sort_values('timestamp')
+                sentiment_data = sentiment_data.sort_values('timestamp')
+                df = pd.merge_asof(
+                    df,
+                    sentiment_data[['timestamp', 'sentiment_score']],
+                    on='timestamp',
+                    direction='backward'
+                )
+                df['sentiment_score'] = df['sentiment_score'].fillna(0.0)
             else:
                 df['sentiment_score'] = 0.0
             
@@ -768,7 +779,16 @@ class BacktestTool:
                 
                 if len(df) == 0:
                     return {"success": False, "error": "指定日期範圍內沒有數據"}
-            
+
+            # Check minimum data requirement for indicators
+            # SMA slow period is 50, which requires at least 50+ data points
+            MIN_DATA_POINTS = 60  # Buffer for indicator warm-up
+            if len(df) < MIN_DATA_POINTS:
+                return {
+                    "success": False,
+                    "error": f"數據量不足：需要至少 {MIN_DATA_POINTS} 個數據點來計算技術指標，但只有 {len(df)} 個。請擴大日期範圍或使用更短的時間週期。"
+                }
+
             # Run backtest with time-aligned sentiment
             self.engine.initial_cash = initial_capital
             result = self.engine.run_backtest(

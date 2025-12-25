@@ -237,62 +237,70 @@ IMPORTANT: Return ONLY the JSON object, nothing else. No extra text, no thinking
     def _infer_tool_from_message(self, message: str) -> Optional[Dict[str, Any]]:
         """Fallback method to infer tool from user message"""
         message_lower = message.lower()
-        
-        # Price queries
+
+        # Extract symbol first (used by multiple tool types)
+        symbol = 'BTC/USDT'
+        base_symbol = 'BTC'
+        for s in ['btc', 'eth', 'bnb', 'sol', 'ada', 'xrp', 'doge']:
+            if s in message_lower:
+                symbol = s.upper() + '/USDT'
+                base_symbol = s.upper()
+                break
+
+        # Chart/Trend queries - check BEFORE general analysis
+        if any(word in message_lower for word in ['走勢', '圖表', 'chart', 'trend', 'k線', 'kline', '曲線', '歷史價格']):
+            return {
+                "tool": "create_chart",
+                "params": {"symbol": symbol, "chart_type": "line", "timeframe": "1d", "limit": 30},
+                "explanation": f"生成{symbol}價格走勢圖"
+            }
+
+        # OHLCV/Candlestick queries
+        if any(word in message_lower for word in ['ohlcv', '蠟燭圖', 'candlestick', 'k棒']):
+            return {
+                "tool": "get_crypto_ohlcv",
+                "params": {"symbol": symbol, "timeframe": "1d", "limit": 30},
+                "explanation": f"獲取{symbol}的K線數據"
+            }
+
+        # Price queries (current price only)
         if any(word in message_lower for word in ['價格', 'price', '多少錢', '查詢']):
-            # Extract symbol
-            symbol = 'BTC/USDT'
-            for s in ['btc', 'eth', 'bnb', 'sol', 'ada', 'xrp', 'doge']:
-                if s in message_lower:
-                    symbol = s.upper() + '/USDT'
-                    break
-            
             return {
                 "tool": "get_crypto_price",
                 "params": {"symbol": symbol},
                 "explanation": f"查詢{symbol}當前價格"
             }
-        
+
+        # News queries (only news, no sentiment)
+        if any(word in message_lower for word in ['新聞', 'news', '消息', '報導']):
+            return {
+                "tool": "get_crypto_news",
+                "params": {"symbol": base_symbol},
+                "explanation": f"獲取{base_symbol}相關新聞"
+            }
+
         # Sentiment analysis
-        if any(word in message_lower for word in ['情感', 'sentiment', '新聞分析']):
-            symbol = 'BTC'
-            for s in ['btc', 'eth', 'bnb', 'sol', 'ada', 'xrp', 'doge']:
-                if s in message_lower:
-                    symbol = s.upper()
-                    break
-            
+        if any(word in message_lower for word in ['情感', 'sentiment', '情緒']):
             return {
                 "tool": "analyze_sentiment",
-                "params": {"symbol": symbol},
-                "explanation": f"分析{symbol}新聞情感"
+                "params": {"symbol": base_symbol},
+                "explanation": f"分析{base_symbol}新聞情感"
             }
-        
+
         # Technical analysis
-        if any(word in message_lower for word in ['技術分析', 'technical', '預測']):
-            symbol = 'BTC/USDT'
-            for s in ['btc', 'eth', 'bnb', 'sol', 'ada', 'xrp', 'doge']:
-                if s in message_lower:
-                    symbol = s.upper() + '/USDT'
-                    break
-            
+        if any(word in message_lower for word in ['技術分析', 'technical', '預測', '指標']):
             return {
                 "tool": "technical_analysis",
                 "params": {"symbol": symbol},
                 "explanation": f"對{symbol}進行技術分析"
             }
-        
-        # Combined analysis
-        if any(word in message_lower for word in ['分析', 'analyze', 'analysis']):
-            symbol = 'BTC/USDT'
-            for s in ['btc', 'eth', 'bnb', 'sol', 'ada', 'xrp', 'doge']:
-                if s in message_lower:
-                    symbol = s.upper() + '/USDT'
-                    break
-            
+
+        # Combined analysis - use more specific keywords
+        if any(word in message_lower for word in ['綜合分析', '完整分析', '全面分析', '交易建議']):
             return {
                 "tool": "combined_analysis",
                 "params": {"symbol": symbol},
                 "explanation": f"對{symbol}進行綜合分析"
             }
-        
+
         return None

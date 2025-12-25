@@ -358,6 +358,33 @@ nav a:hover, nav a.active {
     border-color: var(--primary-color);
 }
 
+.form-hint {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.form-hint p {
+    color: var(--warning-color);
+    margin-bottom: 10px;
+}
+
+.form-hint ul {
+    margin-left: 20px;
+    color: var(--text-secondary);
+}
+
+.form-hint ul li {
+    margin-bottom: 5px;
+}
+
+.form-hint strong {
+    color: var(--text-primary);
+}
+
 .loading-indicator {
     text-align: center;
     padding: 40px;
