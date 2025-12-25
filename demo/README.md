@@ -2,9 +2,7 @@
 
 ## 1. System Introduction
 
-<video width="100%" controls playsinline>
-  <source src="./01-intro.mp4" type="video/mp4">
-</video>
+https://github.com/user-attachments/assets/b73b259d-8d58-4fc8-98e1-e3124b4d4603
 
 ---
 
@@ -12,9 +10,7 @@
 
 Real-time cryptocurrency price queries using natural language.
 
-<video width="100%" controls playsinline>
-  <source src="./02-price-query.mp4" type="video/mp4">
-</video>
+https://github.com/user-attachments/assets/ea3510e9-bb66-4eb1-bc49-0ae6fe54de37
 
 ---
 
@@ -22,9 +18,7 @@ Real-time cryptocurrency price queries using natural language.
 
 FinBERT-based news sentiment analysis.
 
-<video width="100%" controls playsinline>
-  <source src="./03-sentiment-analysis.mp4" type="video/mp4">
-</video>
+https://github.com/user-attachments/assets/3db14ffb-fd6b-4b03-9988-53c3459846db
 
 ---
 
@@ -32,9 +26,7 @@ FinBERT-based news sentiment analysis.
 
 LSTM + Attention deep learning model for technical analysis.
 
-<video width="100%" controls playsinline>
-  <source src="./04-technical-analysis.mp4" type="video/mp4">
-</video>
+https://github.com/user-attachments/assets/bf6faaf6-d6f0-45bb-994b-3ab0ed10e39a
 
 ---
 
@@ -42,6 +34,4 @@ LSTM + Attention deep learning model for technical analysis.
 
 Quantitative backtesting with multiple strategies.
 
-<video width="100%" controls playsinline>
-  <source src="./05-backtest.mp4" type="video/mp4">
-</video>
+https://github.com/user-attachments/assets/dd4e1301-3886-4703-95e7-3d7b7f3fe992
