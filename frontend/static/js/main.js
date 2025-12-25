@@ -178,10 +178,27 @@ function addBotResponse(data) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// 格式化回應文本（支援換行）
+// 格式化回應文本（支援 Markdown）
 function formatResponse(text) {
     if (!text) return '';
-    return text.replace(/\n/g, '<br>');
+
+    // 使用 marked.js 解析 markdown
+    if (typeof marked !== 'undefined') {
+        // 配置 marked
+        marked.setOptions({
+            breaks: true,      // 換行符轉為 <br>
+            gfm: true,         // GitHub Flavored Markdown
+            sanitize: false    // 允許 HTML
+        });
+        return marked.parse(text);
+    }
+
+    // 如果 marked 未載入，使用簡單的替換
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // 粗體
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')              // 斜體
+        .replace(/`(.*?)`/g, '<code>$1</code>')            // 行內代碼
+        .replace(/\n/g, '<br>');                           // 換行
 }
 
 // 從數據直接顯示圖表
