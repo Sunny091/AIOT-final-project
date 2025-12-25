@@ -8,16 +8,16 @@
 
 ## Demo
 
-查看系統演示：[Demo](demo/DEMO.md)
+查看系統演示：[Demo](demo/README.md)
 
 ## Features
 
-- **自然語言交互** - Ollama + GPT-OSS 20B 模型
-- **實時價格查詢** - Binance API
-- **情感分析** - FinBERT 新聞情緒分析
-- **技術分析** - LSTM + Attention 深度學習模型
-- **量化回測** - 情感/技術/綜合策略
-- **圖表可視化** - 價格走勢圖、K線圖
+-   **自然語言交互** - Ollama + GPT-OSS 20B 模型
+-   **實時價格查詢** - Binance API
+-   **情感分析** - FinBERT 新聞情緒分析
+-   **技術分析** - LSTM + Attention 深度學習模型
+-   **量化回測** - 情感/技術/綜合策略
+-   **圖表可視化** - 價格走勢圖、K 線圖
 
 ## Quick Start
 
@@ -37,12 +37,12 @@ Open browser: `http://localhost:11404`
 
 ## Usage
 
-| Command | Description |
-|---------|-------------|
-| 查詢 BTC 價格 | Get real-time price |
-| 分析 BTC 走勢 | Technical analysis |
-| BTC 新聞情感 | News sentiment analysis |
-| 顯示 BTC 圖表 | Price chart |
+| Command       | Description             |
+| ------------- | ----------------------- |
+| 查詢 BTC 價格 | Get real-time price     |
+| 分析 BTC 走勢 | Technical analysis      |
+| BTC 新聞情感  | News sentiment analysis |
+| 顯示 BTC 圖表 | Price chart             |
 
 ## Project Structure
 
@@ -63,22 +63,22 @@ Open browser: `http://localhost:11404`
 
 ## MCP Tools
 
-| Tool | Function |
-|------|----------|
-| `get_crypto_price` | Real-time price query |
-| `get_crypto_ohlcv` | OHLCV candlestick data |
-| `analyze_sentiment` | FinBERT sentiment analysis |
+| Tool                 | Function                    |
+| -------------------- | --------------------------- |
+| `get_crypto_price`   | Real-time price query       |
+| `get_crypto_ohlcv`   | OHLCV candlestick data      |
+| `analyze_sentiment`  | FinBERT sentiment analysis  |
 | `technical_analysis` | DL-based technical analysis |
-| `run_backtest` | Quantitative backtesting |
-| `create_chart` | Chart generation |
+| `run_backtest`       | Quantitative backtesting    |
+| `create_chart`       | Chart generation            |
 
 ## Backtest Performance
 
-| Strategy | Return | Win Rate | Max Drawdown |
-|----------|--------|----------|--------------|
-| Technical | +32.80% | 77.8% | -17.77% |
-| Sentiment | +25.50% | N/A | -29.99% |
-| Combined | +5.08% | 100% | -2.83% |
+| Strategy  | Return  | Win Rate | Max Drawdown |
+| --------- | ------- | -------- | ------------ |
+| Technical | +32.80% | 77.8%    | -17.77%      |
+| Sentiment | +25.50% | N/A      | -29.99%      |
+| Combined  | +5.08%  | 100%     | -2.83%       |
 
 ## Documentation
 
