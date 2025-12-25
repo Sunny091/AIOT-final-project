@@ -138,29 +138,228 @@ function addBotResponse(data) {
     const messagesDiv = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message bot-message';
-    
+
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
-    
+
     let html = `<strong>🤖 AI 助手：</strong>`;
-    
-    // Add thinking process if available
-    if (data.thinking) {
-        html += `<p style="color: #94a3b8; font-style: italic; font-size: 0.9rem;">💭 ${escapeHtml(data.thinking)}</p>`;
+
+    // Add main response (新 API 使用 response 字段)
+    const responseText = data.response || data.message || '';
+    if (responseText) {
+        html += `<p>${formatResponse(responseText)}</p>`;
     }
-    
-    // Add main message
-    html += `<p>${escapeHtml(data.message)}</p>`;
-    
-    // Add tool result if available
+
+    // 處理圖表數據 (直接從回應中獲取)
+    if (data.chart_data) {
+        displayChartFromData(data.chart_data);
+        html += `<div class="tool-result">
+            <div class="result-title">📈 圖表已生成</div>
+            <p>顯示 ${data.chart_data.symbol} ${data.chart_data.period || ''} 的價格走勢</p>
+            <p style="color: #94a3b8; font-size: 0.85rem;">數據來源: ${data.chart_data.source || 'API'}</p>
+        </div>`;
+    }
+
+    // 處理工具結果數組 (新 API 格式)
+    if (data.tool_results && data.tool_results.length > 0) {
+        for (const tr of data.tool_results) {
+            html += formatToolResultNew(tr.tool, tr.result);
+        }
+    }
+
+    // 舊格式兼容
     if (data.tool_result && data.tool_used) {
         html += formatToolResult(data.tool_used, data.tool_result);
     }
-    
+
     contentDiv.innerHTML = html;
     messageDiv.appendChild(contentDiv);
     messagesDiv.appendChild(messageDiv);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// 格式化回應文本（支援換行）
+function formatResponse(text) {
+    if (!text) return '';
+    return text.replace(/\n/g, '<br>');
+}
+
+// 從數據直接顯示圖表
+function displayChartFromData(chartData) {
+    const chartContainer = document.getElementById('chartContainer');
+    const chartDisplay = document.getElementById('chartDisplay');
+
+    chartContainer.style.display = 'block';
+    chartDisplay.innerHTML = '';
+
+    if (chartData.timestamps && chartData.prices) {
+        const trace = {
+            x: chartData.timestamps,
+            y: chartData.prices,
+            type: 'scatter',
+            mode: 'lines',
+            name: `${chartData.symbol} 價格`,
+            line: {
+                color: '#00D9FF',
+                width: 2
+            },
+            fill: 'tozeroy',
+            fillcolor: 'rgba(0, 217, 255, 0.1)'
+        };
+
+        const layout = {
+            title: `${chartData.symbol} 價格走勢 ${chartData.period || ''}`,
+            xaxis: {
+                title: '時間',
+                type: 'date',
+                gridcolor: '#2a2a4a'
+            },
+            yaxis: {
+                title: '價格 (USD)',
+                gridcolor: '#2a2a4a'
+            },
+            template: 'plotly_dark',
+            paper_bgcolor: '#1a1a2e',
+            plot_bgcolor: '#16213e',
+            hovermode: 'x unified',
+            height: 450,
+            margin: { t: 50, b: 50, l: 60, r: 30 }
+        };
+
+        Plotly.newPlot('chartDisplay', [trace], layout, {responsive: true});
+    }
+
+    chartContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// 格式化新的工具結果格式
+function formatToolResultNew(toolName, result) {
+    if (!result) return '';
+
+    if (result.error) {
+        return `<div class="tool-result">
+            <div class="result-title">❌ ${toolName} 執行失敗</div>
+            <p>${result.error}</p>
+        </div>`;
+    }
+
+    let html = `<div class="tool-result">
+        <div class="result-title">✅ ${getToolDisplayName(toolName)}</div>
+        <div class="result-data">`;
+
+    // 即時價格
+    if (toolName === 'get_current_price' && result.price_usd) {
+        html += `
+            <div class="result-item">
+                <span class="result-label">幣種</span>
+                <span class="result-value">${result.symbol}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">當前價格</span>
+                <span class="result-value">$${formatPrice(result.price_usd)}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">24小時漲跌</span>
+                <span class="result-value ${result.change_24h_percent > 0 ? 'positive' : 'negative'}">
+                    ${result.change_24h_percent > 0 ? '+' : ''}${result.change_24h_percent.toFixed(2)}%
+                </span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">24小時交易量</span>
+                <span class="result-value">$${formatNumber(result.volume_24h_usd)}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">市值</span>
+                <span class="result-value">$${formatNumber(result.market_cap_usd)}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">數據來源</span>
+                <span class="result-value">${result.source || 'API'}</span>
+            </div>`;
+    }
+    // 技術分析
+    else if (toolName === 'get_technical_analysis' && result.indicators) {
+        const ind = result.indicators;
+        html += `
+            <div class="result-item">
+                <span class="result-label">幣種</span>
+                <span class="result-value">${result.symbol}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">當前價格</span>
+                <span class="result-value">$${formatPrice(ind.current_price)}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">RSI(14)</span>
+                <span class="result-value">${ind.rsi_14} - ${ind.rsi_signal}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">7日波動率</span>
+                <span class="result-value">${ind.volatility_7d}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">SMA 20</span>
+                <span class="result-value">$${formatPrice(ind.sma_20)}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">SMA 50</span>
+                <span class="result-value">$${formatPrice(ind.sma_50)}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">趨勢</span>
+                <span class="result-value ${result.trend === '上升' ? 'positive' : 'negative'}">${result.trend}</span>
+            </div>`;
+    }
+    // 歷史價格
+    else if (toolName === 'get_price_history' && result.data) {
+        html += `
+            <div class="result-item">
+                <span class="result-label">幣種</span>
+                <span class="result-value">${result.symbol}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">時間範圍</span>
+                <span class="result-value">${result.start_date} ~ ${result.end_date}</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">數據點數</span>
+                <span class="result-value">${result.data.length}</span>
+            </div>`;
+    }
+    // 通用格式
+    else {
+        for (const [key, value] of Object.entries(result)) {
+            if (typeof value !== 'object' && key !== 'timestamp') {
+                html += `
+                    <div class="result-item">
+                        <span class="result-label">${key}</span>
+                        <span class="result-value">${value}</span>
+                    </div>`;
+            }
+        }
+    }
+
+    html += `</div></div>`;
+    return html;
+}
+
+// 工具名稱顯示
+function getToolDisplayName(toolName) {
+    const names = {
+        'get_current_price': '即時價格',
+        'get_price_history': '歷史價格',
+        'get_technical_analysis': '技術分析',
+        'run_backtest': '策略回測'
+    };
+    return names[toolName] || toolName;
+}
+
+// 格式化價格
+function formatPrice(price) {
+    if (price >= 1000) {
+        return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    return price.toFixed(price < 1 ? 4 : 2);
 }
 
 // Format tool result display
